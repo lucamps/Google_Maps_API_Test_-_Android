@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Google Maps API Test - Android</string>
+    <string name="my_location">Minha Localização</string>
+    <string name="apartment">Meu apartamento em Viçosa - MG</string>
+    <string name="pf_house">Minha casa em Porto Firme - MG</string>
+    <string name="department">Departamento de Informática - UFV</string>
+    <string name="title_activity_maps">Mapa</string>
+</resources>
