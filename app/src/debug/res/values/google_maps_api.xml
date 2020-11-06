@@ -1,0 +1,24 @@
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=9D:5C:6B:FA:87:E2:77:B5:DC:FD:94:99:E3:1D:05:2E:8D:87:02:3C%3Bandroid.lucamps.googlemapsapitest
+
+    You can also add your credentials to an existing key, using these values:
+
+    Package name:
+    android.lucamps.googlemapsapitest
+
+    SHA-1 certificate fingerprint:
+    9D:5C:6B:FA:87:E2:77:B5:DC:FD:94:99:E3:1D:05:2E:8D:87:02:3C
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBBZySi--D5M1vPkIDF9ucUpySKChkTDMM</string>
+</resources>
