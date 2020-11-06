@@ -2,6 +2,7 @@ package android.lucamps.googlemapsapitest;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,11 +37,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Intent it = getIntent();
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        //LatLng temp = new LatLng(-34, 151);
+        LatLng temp = new LatLng(it.getDoubleExtra("lat",0.0), it.getDoubleExtra("lgn",0.0));
+        mMap.addMarker(new MarkerOptions().position(temp).title(it.getStringExtra("title")));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(temp));
     }
 }
