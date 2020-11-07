@@ -16,6 +16,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -145,27 +146,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        // Creates a random point
-        /*final Location randomPoint = new Location(provider);
-        randomPoint.setLatitude(DPI.latitude);
-        randomPoint.setLongitude(DPI.longitude);*/
-
         double lat = location.getLatitude();
         double lng = location.getLongitude();
         setMyLocation(lat, lng);
-
-        //mMap.addMarker(new MarkerOptions().position(myLocation).title("Minha Localização").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-
-        /*double speed = location.getSpeed() * 3.6; //converts into km/h
-        double distance = location.distanceTo(randomPoint) / 1000; //converts into km*/
-
-        /*DecimalFormat df = new DecimalFormat("0.##");
-
-        Toast.makeText(this, "Latitude: " + lat +
-                                            "\nLongitude: " + lng,
-                                            Toast.LENGTH_LONG).show();
-         */
-
     }
 
     /**
@@ -200,7 +183,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 update = CameraUpdateFactory.newLatLngZoom(PF,18);
                 break;
             default:
-                update = CameraUpdateFactory.newLatLngZoom(myLocation,20);
+                update = CameraUpdateFactory.newLatLngZoom(PF,20);
                 break;
         }
         mMap.animateCamera(update);
@@ -224,7 +207,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.animateCamera(update);
     }
 
-    public void onClick_myLocalization(View view) {
+    public void onClick_myLocation(View view) {
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(myLocation,18);
         mMap.animateCamera(update);
