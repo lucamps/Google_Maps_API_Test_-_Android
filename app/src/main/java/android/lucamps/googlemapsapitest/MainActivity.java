@@ -14,16 +14,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Button myLocation_bt = findViewById(R.id.bt_myLocation);
+        //final Button myLocation_bt = findViewById(R.id.bt_myLocation);
         final Button apartment_bt = findViewById(R.id.bt_apartment);
         final Button department_bt = findViewById(R.id.bt_department);
         final Button pf_bt = findViewById(R.id.bt_pf);
         final Button close_bt = findViewById(R.id.bt_close);
 
-        myLocation_bt.setOnClickListener(view -> {
+        /*myLocation_bt.setOnClickListener(view -> {
             Intent it = new Intent (getBaseContext(), MapsActivity.class);
+            it.putExtra("local","myLocation");
             startActivity(it);
-        });
+        });*/
 
         apartment_bt.setOnClickListener(view -> {
             Intent it = new Intent (getBaseContext(), MapsActivity.class);

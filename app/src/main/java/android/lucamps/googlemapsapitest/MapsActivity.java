@@ -25,7 +25,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.w3c.dom.Text;
@@ -40,7 +43,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final LatLng APT = new LatLng(-20.751036, -42.869928);
     private final LatLng PF = new LatLng(-20.672017, -43.081624);
     private final LatLng DPI = new LatLng(-20.764962, -42.868489);
+    public LatLng myLocation= new LatLng(-20.764960, -42.868487);;
     private GoogleMap mMap;
+
+    private Marker myLocationMarker;
 
     public LocationManager lm;
     public Criteria criteria;
@@ -48,15 +54,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public int REQUISITION_TIME_LATLONG = 5000;
     public int DISTANCE_IN_METERS = 0;
 
+    void setMyLocation(double lat, double lng) {
+        myLocation = new LatLng(lat, lng);
+
+        if(myLocationMarker != null)
+            myLocationMarker.remove();
+
+        myLocationMarker = mMap.addMarker(new MarkerOptions().position(myLocation).title("Minha Localização").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
         // Location Manager
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -74,12 +85,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             criteria.setAccuracy(Criteria.ACCURACY_COARSE);
             Log.i("LOCATION", "Using internet");
         }
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
+    protected void updateLocation(){
         // Gets the best provider
         provider = lm.getBestProvider(criteria, true);
 
@@ -89,8 +102,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.i("PROVIDER", "Using: " + provider);
 
             // Gets location update
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             lm.requestLocationUpdates(provider, REQUISITION_TIME_LATLONG, DISTANCE_IN_METERS, this);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateLocation();
     }
 
     @Override
@@ -98,38 +127,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Stops location manager
         lm.removeUpdates(this);
 
-        Log.w("PROVIDER","Provider " + provider + " stopped!");
+        Log.w("PROVIDER", "Provider " + provider + " stopped!");
         super.onDestroy();
     }
 
     @Override
-    public void onProviderDisabled(@NonNull String provider) {}
+    public void onProviderDisabled(@NonNull String provider) {
+    }
 
     @Override
-    public void onProviderEnabled(@NonNull String provider) {}
+    public void onProviderEnabled(@NonNull String provider) {
+    }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {}
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
         // Creates a random point
-        final Location randomPoint = new Location(provider);
+        /*final Location randomPoint = new Location(provider);
         randomPoint.setLatitude(DPI.latitude);
-        randomPoint.setLongitude(DPI.longitude);
+        randomPoint.setLongitude(DPI.longitude);*/
 
         double lat = location.getLatitude();
         double lng = location.getLongitude();
-        double speed = location.getSpeed() * 3.6; //converts into km/h
-        double distance = location.distanceTo(randomPoint) / 1000; //converts into km
+        setMyLocation(lat, lng);
 
-        DecimalFormat df = new DecimalFormat("0.##");
+        //mMap.addMarker(new MarkerOptions().position(myLocation).title("Minha Localização").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
+        /*double speed = location.getSpeed() * 3.6; //converts into km/h
+        double distance = location.distanceTo(randomPoint) / 1000; //converts into km*/
+
+        /*DecimalFormat df = new DecimalFormat("0.##");
 
         Toast.makeText(this, "Latitude: " + lat +
-                                            "\nLongitude: " + lng +
-                                            "\nVelocidade: " + df.format(speed) +
-                                            "Distancia: " + df.format(distance),
+                                            "\nLongitude: " + lng,
                                             Toast.LENGTH_LONG).show();
+         */
+
     }
 
     /**
@@ -149,7 +185,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(APT).title(getString(R.string.apartment)));
         mMap.addMarker(new MarkerOptions().position(PF).title(getString(R.string.pf_house)));
         mMap.addMarker(new MarkerOptions().position(DPI).title(getString(R.string.department)));
-        //mMap.addMarker(new MarkerOptions().position(lm.))
+        //updateLocation();
+        //mMap.addMarker(new MarkerOptions().position(myLocation).title("Minha Localização").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
         CameraUpdate update;
         switch (it.getStringExtra("local")){
@@ -163,7 +200,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 update = CameraUpdateFactory.newLatLngZoom(PF,18);
                 break;
             default:
-                update = CameraUpdateFactory.newLatLngZoom(APT,20);
+                update = CameraUpdateFactory.newLatLngZoom(myLocation,20);
                 break;
         }
         mMap.animateCamera(update);
@@ -187,4 +224,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.animateCamera(update);
     }
 
+    public void onClick_myLocalization(View view) {
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(myLocation,18);
+        mMap.animateCamera(update);
+    }
 }

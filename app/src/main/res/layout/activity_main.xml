@@ -40,18 +40,8 @@
         android:layout_alignEnd="@id/bt_department"
         android:layout_alignStart="@id/bt_department"
         android:layout_centerHorizontal="true"
-        android:text="@string/my_location"
-        android:id="@+id/bt_myLocation"
-        android:layout_below="@id/bt_department"/>
-
-    <Button
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_alignEnd="@id/bt_department"
-        android:layout_alignStart="@id/bt_department"
-        android:layout_centerHorizontal="true"
         android:text="@string/close_app"
         android:id="@+id/bt_close"
-        android:layout_below="@id/bt_myLocation"/>
+        android:layout_below="@id/bt_department"/>
 
 </RelativeLayout>
