@@ -9,7 +9,6 @@ import android.widget.Button;
 import com.google.android.gms.maps.model.LatLng;
 
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,12 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         apartment_bt.setOnClickListener(view -> {
             Intent it = new Intent (getBaseContext(), MapsActivity.class);
-            //-20.751036, -42.869928
-            double lat = -20.751036;
-            double lgn = -42.869928;
-            it.putExtra("lat",lat);
-            it.putExtra("lgn",lgn);
-            it.putExtra("title", R.string.apartment);
+            it.putExtra("local","APT");
             startActivity(it);
         });
 
