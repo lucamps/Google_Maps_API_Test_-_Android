@@ -58,5 +58,17 @@
         android:focusable="true"
         android:onClick="onClick_myLocation"/>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/bt_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bt_myLocation"
+        android:layout_alignStart="@id/bt_myLocation"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="@color/light_gray"
+        android:clickable="true"
+        android:src="@android:drawable/ic_menu_mapmode"
+        android:onClick="onClick_changeMap"/>
+
 
 </RelativeLayout>

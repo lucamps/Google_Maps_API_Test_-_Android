@@ -246,19 +246,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void onClick_Vicosa(View v) {
-        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        //mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(APT, 18);
         mMap.animateCamera(update);
     }
 
     public void onClick_PF(View v) {
-        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        //mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(PF, 18);
         mMap.animateCamera(update);
     }
 
     public void onClick_DPI(View v) {
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        //mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(DPI, 18);
         mMap.animateCamera(update);
     }
@@ -274,5 +274,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             showDistance();
         }
+    }
+
+    public void onClick_changeMap(View view) {
+        int type = mMap.getMapType();
+        if(type >= 4)
+            type = 0;
+
+        type++;
+        mMap.setMapType(type);
     }
 }
