@@ -31,11 +31,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         department_bt.setOnClickListener(view -> {
-
+            Intent it = new Intent (getBaseContext(), MapsActivity.class);
+            it.putExtra("local","DPI");
+            startActivity(it);
         });
 
         pf_bt.setOnClickListener(view -> {
-
+            Intent it = new Intent (getBaseContext(), MapsActivity.class);
+            it.putExtra("local","PF");
+            startActivity(it);
         });
 
     }

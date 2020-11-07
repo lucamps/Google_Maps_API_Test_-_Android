@@ -1,5 +1,7 @@
 package android.lucamps.googlemapsapitest;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Intent;
@@ -16,6 +18,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.w3c.dom.Text;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private LatLng APT = new LatLng(-20.751036, -42.869928);
@@ -61,11 +68,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(PF).title(getString(R.string.pf_house)));
         mMap.addMarker(new MarkerOptions().position(DPI).title(getString(R.string.department)));
 
-        CameraUpdate update = null;
-        if(it.getStringExtra("local").equals("APT")){
-            update = CameraUpdateFactory.newLatLngZoom(APT,20);
+        CameraUpdate update;
+        switch (it.getStringExtra("local")){
+            case "APT":
+                update = CameraUpdateFactory.newLatLngZoom(APT,18);
+                break;
+            case "DPI":
+                update = CameraUpdateFactory.newLatLngZoom(DPI,18);
+                break;
+            case "PF":
+                update = CameraUpdateFactory.newLatLngZoom(PF,18);
+                break;
+            default:
+                update = CameraUpdateFactory.newLatLngZoom(APT,20);
+                break;
         }
-        assert update != null;
         mMap.animateCamera(update);
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(temp));
     }
