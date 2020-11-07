@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         final Button apartment_bt = findViewById(R.id.bt_apartment);
         final Button department_bt = findViewById(R.id.bt_department);
         final Button pf_bt = findViewById(R.id.bt_pf);
+        final Button close_bt = findViewById(R.id.bt_close);
 
         myLocation_bt.setOnClickListener(view -> {
             Intent it = new Intent (getBaseContext(), MapsActivity.class);
@@ -40,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
             Intent it = new Intent (getBaseContext(), MapsActivity.class);
             it.putExtra("local","PF");
             startActivity(it);
+        });
+
+        close_bt.setOnClickListener(view -> {
+            finish();
         });
 
     }

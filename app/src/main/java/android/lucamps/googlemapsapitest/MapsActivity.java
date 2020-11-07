@@ -80,7 +80,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
         }
         mMap.animateCamera(update);
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(temp));
     }
 
     public void onClick_Vicosa(View v){
