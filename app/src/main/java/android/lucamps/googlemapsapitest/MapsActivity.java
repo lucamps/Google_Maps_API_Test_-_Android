@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -137,6 +138,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         requestLocationPermission();
     }
 
+    @SuppressLint("MissingPermission")
     protected void updateLocation() {
         // Gets the best provider
         provider = lm.getBestProvider(criteria, true);
@@ -197,18 +199,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        /*final Location apt_vicosa = new Location(provider);
-        apt_vicosa.setLatitude(APT.latitude);
-        apt_vicosa.setLongitude(APT.longitude);*/
-
         double lat = location.getLatitude();
         double lng = location.getLongitude();
         setMyLocation(lat, lng);
-
-        /*double distancia = location.distanceTo(apt_vicosa) / 1000;
-        DecimalFormat df = new DecimalFormat("0.##");
-
-        Toast.makeText(this, "Distância do apartamento: " + df.format(distancia) +" km", Toast.LENGTH_LONG).show();*/
 
         Log.i("LOCATION CHANGED", "LAT=" + lat + " LONG=" + lng);
     }
@@ -233,6 +226,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //updateLocation();
         //mMap.addMarker(new MarkerOptions().position(myLocation).title("Minha Localização").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         CameraUpdate update;
         switch (it.getStringExtra("local")) {
             case "APT":
