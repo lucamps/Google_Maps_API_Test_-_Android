@@ -3,8 +3,10 @@ package android.lucamps.googlemapsapitest;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +16,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -44,7 +47,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final LatLng APT = new LatLng(-20.751036, -42.869928);
     private final LatLng PF = new LatLng(-20.672017, -43.081624);
     private final LatLng DPI = new LatLng(-20.764962, -42.868489);
-    public LatLng myLocation= new LatLng(-20.764960, -42.868487);;
+    public LatLng myLocation = new LatLng(-20.764960, -42.868487);
+
+    public boolean GPSLoaded = false;
+
     private GoogleMap mMap;
 
     private Marker myLocationMarker;
@@ -55,14 +61,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public int REQUISITION_TIME_LATLONG = 5000;
     public int DISTANCE_IN_METERS = 0;
 
+    /*Request handler*/
+    private final int LOCATION_PERMISSION = 1;
+
+    public void requestLocationPermission() {
+        //Vefifica se é necessário pedir permissão
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //verifica se precisa explicar
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Toast.makeText(this, "Permita o aplicativo a usar GPS!", Toast.LENGTH_LONG).show();
+
+                //pede permissão
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
+            }
+        } else {
+            updateLocation();
+            //lm.requestLocationUpdates(provider, REQUISITION_TIME_LATLONG, DISTANCE_IN_METERS, this);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case LOCATION_PERMISSION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    updateLocation();
+                    //lm.requestLocationUpdates(provider, REQUISITION_TIME_LATLONG, DISTANCE_IN_METERS, this);
+                }
+            }
+        }
+    }
+    /* **************************************************************************************************** */
+
     void setMyLocation(double lat, double lng) {
         myLocation = new LatLng(lat, lng);
 
-        if(myLocationMarker != null)
+        if (myLocationMarker != null)
             myLocationMarker.remove();
 
         myLocationMarker = mMap.addMarker(new MarkerOptions().position(myLocation).title("Minha Localização").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-
+        GPSLoaded = true;
     }
 
     @Override
@@ -91,9 +133,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        requestLocationPermission();
     }
 
-    protected void updateLocation(){
+    protected void updateLocation() {
         // Gets the best provider
         provider = lm.getBestProvider(criteria, true);
 
@@ -103,24 +147,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.i("PROVIDER", "Using: " + provider);
 
             // Gets location update
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
             lm.requestLocationUpdates(provider, REQUISITION_TIME_LATLONG, DISTANCE_IN_METERS, this);
+
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        updateLocation();
+        //updateLocation();
     }
 
     @Override
@@ -138,17 +173,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onProviderEnabled(@NonNull String provider) {
+
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 
+    void showDistance(){
+        final Location temp = new Location(provider);
+        temp.setLatitude(myLocation.latitude);
+        temp.setLongitude(myLocation.longitude);
+
+        final Location apt_vicosa = new Location(provider);
+        apt_vicosa.setLatitude(APT.latitude);
+        apt_vicosa.setLongitude(APT.longitude);
+
+        double distancia = temp.distanceTo(apt_vicosa) / 1000;
+        DecimalFormat df = new DecimalFormat("0.##");
+
+        Toast.makeText(this, "Distância do apartamento: " + df.format(distancia) +" km", Toast.LENGTH_LONG).show();
+    }
+
     @Override
     public void onLocationChanged(@NonNull Location location) {
+        /*final Location apt_vicosa = new Location(provider);
+        apt_vicosa.setLatitude(APT.latitude);
+        apt_vicosa.setLongitude(APT.longitude);*/
+
         double lat = location.getLatitude();
         double lng = location.getLongitude();
         setMyLocation(lat, lng);
+
+        /*double distancia = location.distanceTo(apt_vicosa) / 1000;
+        DecimalFormat df = new DecimalFormat("0.##");
+
+        Toast.makeText(this, "Distância do apartamento: " + df.format(distancia) +" km", Toast.LENGTH_LONG).show();*/
+
+        Log.i("LOCATION CHANGED", "LAT=" + lat + " LONG=" + lng);
     }
 
     /**
@@ -172,44 +234,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mMap.addMarker(new MarkerOptions().position(myLocation).title("Minha Localização").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
         CameraUpdate update;
-        switch (it.getStringExtra("local")){
+        switch (it.getStringExtra("local")) {
             case "APT":
-                update = CameraUpdateFactory.newLatLngZoom(APT,18);
+                update = CameraUpdateFactory.newLatLngZoom(APT, 18);
                 break;
             case "DPI":
-                update = CameraUpdateFactory.newLatLngZoom(DPI,18);
+                update = CameraUpdateFactory.newLatLngZoom(DPI, 18);
                 break;
             case "PF":
-                update = CameraUpdateFactory.newLatLngZoom(PF,18);
+                update = CameraUpdateFactory.newLatLngZoom(PF, 18);
                 break;
             default:
-                update = CameraUpdateFactory.newLatLngZoom(PF,20);
+                update = CameraUpdateFactory.newLatLngZoom(PF, 20);
                 break;
         }
         mMap.animateCamera(update);
     }
 
-    public void onClick_Vicosa(View v){
+    public void onClick_Vicosa(View v) {
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(APT,18);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(APT, 18);
         mMap.animateCamera(update);
     }
 
-    public void onClick_PF(View v){
+    public void onClick_PF(View v) {
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(PF,18);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(PF, 18);
         mMap.animateCamera(update);
     }
 
-    public void onClick_DPI(View v){
+    public void onClick_DPI(View v) {
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(DPI,18);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(DPI, 18);
         mMap.animateCamera(update);
     }
 
     public void onClick_myLocation(View view) {
-        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(myLocation,18);
-        mMap.animateCamera(update);
+        if(!GPSLoaded) {
+            Toast.makeText(this, "Procurando GPS... tente novamente daqui alguns instantes", Toast.LENGTH_LONG).show();
+        }
+        else {
+            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(myLocation, 18);
+            mMap.animateCamera(update);
+
+            showDistance();
+        }
     }
 }
