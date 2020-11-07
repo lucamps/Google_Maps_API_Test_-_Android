@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -58,11 +59,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         Intent it = getIntent();
         mMap = googleMap;
-        
-        // Add a marker in Sydney and move the camera
-        //LatLng temp = new LatLng(-34, 151);
-
-        //LatLng temp = new LatLng(it.getDoubleExtra("lat",0.0), it.getDoubleExtra("lgn",0.0));
 
         mMap.addMarker(new MarkerOptions().position(APT).title(getString(R.string.apartment)));
         mMap.addMarker(new MarkerOptions().position(PF).title(getString(R.string.pf_house)));
@@ -87,5 +83,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(temp));
     }
 
+    public void onClick_Vicosa(View v){
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(APT,18);
+        mMap.animateCamera(update);
+    }
+
+    public void onClick_PF(View v){
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(PF,18);
+        mMap.animateCamera(update);
+    }
+
+    public void onClick_DPI(View v){
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(DPI,18);
+        mMap.animateCamera(update);
+    }
 
 }
