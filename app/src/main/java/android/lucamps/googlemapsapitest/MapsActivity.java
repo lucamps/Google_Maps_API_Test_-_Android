@@ -1,14 +1,7 @@
 package android.lucamps.googlemapsapitest;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,13 +10,14 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,18 +25,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.w3c.dom.Text;
-
 import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
     private final LatLng APT = new LatLng(-20.751036, -42.869928);
@@ -61,8 +48,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public String provider;
     public int REQUISITION_TIME_LATLONG = 5000;
     public int DISTANCE_IN_METERS = 0;
+    public int ZOOM = 18;
 
-    /*Request handler*/
     private final int LOCATION_PERMISSION = 1;
 
     public void requestLocationPermission() {
@@ -70,8 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //verifica se precisa explicar
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-                Toast.makeText(this, "Permita o aplicativo a usar GPS!", Toast.LENGTH_LONG).show();
-
+                Toast.makeText(this, getString(R.string.allow_gps), Toast.LENGTH_LONG).show();
                 //pede permissão
                 ActivityCompat.requestPermissions(this,
                         new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
@@ -81,7 +67,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         } else {
             updateLocation();
-            //lm.requestLocationUpdates(provider, REQUISITION_TIME_LATLONG, DISTANCE_IN_METERS, this);
         }
     }
 
@@ -91,12 +76,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case LOCATION_PERMISSION: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     updateLocation();
-                    //lm.requestLocationUpdates(provider, REQUISITION_TIME_LATLONG, DISTANCE_IN_METERS, this);
                 }
             }
         }
     }
-    /* **************************************************************************************************** */
 
     void setMyLocation(double lat, double lng) {
         myLocation = new LatLng(lat, lng);
@@ -191,10 +174,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         apt_vicosa.setLatitude(APT.latitude);
         apt_vicosa.setLongitude(APT.longitude);
 
-        double distancia = temp.distanceTo(apt_vicosa) / 1000;
+        double distance = temp.distanceTo(apt_vicosa) / 1000;
         DecimalFormat df = new DecimalFormat("0.##");
 
-        Toast.makeText(this, "Distância do apartamento: " + df.format(distancia) +" km", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.distance_ap) + " " + df.format(distance) +" km", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -223,55 +206,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(APT).title(getString(R.string.apartment)));
         mMap.addMarker(new MarkerOptions().position(PF).title(getString(R.string.pf_house)));
         mMap.addMarker(new MarkerOptions().position(DPI).title(getString(R.string.department)));
-        //updateLocation();
-        //mMap.addMarker(new MarkerOptions().position(myLocation).title("Minha Localização").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
-        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         CameraUpdate update;
         switch (it.getStringExtra("local")) {
             case "APT":
-                update = CameraUpdateFactory.newLatLngZoom(APT, 18);
+                update = CameraUpdateFactory.newLatLngZoom(APT, ZOOM);
                 break;
             case "DPI":
-                update = CameraUpdateFactory.newLatLngZoom(DPI, 18);
+                update = CameraUpdateFactory.newLatLngZoom(DPI, ZOOM);
                 break;
             case "PF":
-                update = CameraUpdateFactory.newLatLngZoom(PF, 18);
+                update = CameraUpdateFactory.newLatLngZoom(PF, ZOOM);
                 break;
             default:
-                update = CameraUpdateFactory.newLatLngZoom(PF, 20);
-                break;
+                throw new IllegalStateException("Unexpected value: " + it.getStringExtra("local"));
         }
         mMap.animateCamera(update);
     }
 
     public void onClick_Vicosa(View v) {
-        //mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(APT, 18);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(APT, ZOOM);
         mMap.animateCamera(update);
     }
 
     public void onClick_PF(View v) {
-        //mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(PF, 18);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(PF, ZOOM);
         mMap.animateCamera(update);
     }
 
     public void onClick_DPI(View v) {
-        //mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(DPI, 18);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(DPI, ZOOM);
         mMap.animateCamera(update);
     }
 
     public void onClick_myLocation(View view) {
         if(!GPSLoaded) {
-            Toast.makeText(this, "Procurando GPS... tente novamente daqui alguns instantes", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.getting_gps), Toast.LENGTH_LONG).show();
         }
-        else {
-            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(myLocation, 18);
+        else{
+            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(myLocation, ZOOM);
             mMap.animateCamera(update);
-
             showDistance();
         }
     }

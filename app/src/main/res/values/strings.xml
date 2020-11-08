@@ -10,5 +10,9 @@
     <string name="vicosa">Viçosa - MG</string>
     <string name="dpi">DPI - UFV</string>
 
+    <string name="allow_gps">Please allow the application to use GPS!</string>
+    <string name="getting_gps">Getting the GPS signal… try again in a few moments.</string>
+    <string name="distance_ap">Distance to apartment:</string>
+
     <string name="title_activity_maps">Map</string>
 </resources>
